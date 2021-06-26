@@ -50,8 +50,12 @@ def read_from_pickle(path, return_tf_data_set=True, num_samples=None):
             except EOFError:
                 break
     objects = objects[0]
+    print(objects)
     if return_tf_data_set:
         depo, graphs, demand = objects
+        # print(depo)
+        # print(graphs)
+        # print(demand)
         if num_samples is not None:
             return tf.data.Dataset.from_tensor_slices((list(depo), list(graphs), list(demand))).take(num_samples)
         else:

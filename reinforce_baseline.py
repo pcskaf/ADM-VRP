@@ -37,6 +37,8 @@ def rollout(model, dataset, batch_size = 1000, disable_tqdm = False):
     set_decode_type(model, "greedy")
     costs_list = []
 
+    print(dataset.batch(batch_size))
+
     for batch in tqdm(dataset.batch(batch_size), disable=disable_tqdm, desc="Rollout greedy execution"):
         cost, _ = model(batch)
         costs_list.append(cost)
