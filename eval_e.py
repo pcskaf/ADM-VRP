@@ -90,11 +90,11 @@ def read_data_from_vrp(file):
         dem = list(problem.demands.values())
 
         # FOR E INSTANCES
-        # veh=getbehiclesfromname(problem.name)
+        veh=getbehiclesfromname(problem.name)
         # depo, graphs, demand = transform_data(coords, dem, veh, problem.dimension - 1)
 
         # FOR M AND CMT INSTANCES
-        veh=problem.vehicles
+        # veh=problem.vehicles
         # depo, graphs, demand = transform_data(coords, dem, problem.vehicles, problem.dimension-1)
 
         return transform_data(problem.name, coords, dem, veh, problem.dimension - 1)
