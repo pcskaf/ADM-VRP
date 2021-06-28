@@ -48,6 +48,7 @@ def transform_data(filename, node_coords, demand, capacity, graph_size):
         graphs.write(x, node_coords[1:])
         x = 0
         dem.write(x,demand[1:])
+        # dem.write(x, demand)
         # depo, graphs, demand = (node_coords[0], node_coords[1:], tf.cast(demand[1:], tf.float32) / tf.cast(capacity, tf.float32))
         # return (node_coords[0], node_coords[1:], tf.cast(demand[1:], tf.float32) / tf.cast(capacity, tf.float32))
     else:
@@ -89,11 +90,11 @@ def read_data_from_vrp(file):
         dem = list(problem.demands.values())
 
         # FOR E INSTANCES
-        # veh=getbehiclesfromname(problem.name)
+        veh=getbehiclesfromname(problem.name)
         # depo, graphs, demand = transform_data(coords, dem, veh, problem.dimension - 1)
 
         # FOR M AND CMT INSTANCES
-        veh=problem.vehicles
+        # veh=problem.vehicles
         # depo, graphs, demand = transform_data(coords, dem, problem.vehicles, problem.dimension-1)
 
         return transform_data(problem.name, coords, dem, veh, problem.dimension - 1)
@@ -129,7 +130,7 @@ def read_from_pickle(path, return_tf_data_set=True, num_samples=None):
                 objects.append(pickle.load(openfile))
             except EOFError:
                 break
-    print(objects)
+    # print(objects)
     objects = objects[0]
     if return_tf_data_set:
         depo, graphs, demand = objects
@@ -143,25 +144,38 @@ def read_from_pickle(path, return_tf_data_set=True, num_samples=None):
     else:
         return objects
 
-MODEL_PATH = 'C:/Users/User/Documents/ΠΑΝΕΠΙΣΤΗΜΙΟ/Διπλωματική/Reinforcement Learning/data/ADM-VRP/model_checkpoint_epoch_99_VRP_20_2021-06-02.h5'
-VAL_SET_PATH_vrp = 'C:/Users/User/Desktop/INSTANCES/M/M-n121-k7.vrp'
-VAL_SET_PATH = 'Validation_dataset_VRP_50_2021-06-24.pkl'
-# validation_dataset = read_from_pickle(VAL_SET_PATH)
-# print(validation_dataset)
+def main(input_path):
+    MODEL_PATH = 'C:/Users/User/Documents/ΠΑΝΕΠΙΣΤΗΜΙΟ/Διπλωματική/Reinforcement Learning/data/ADM-VRP/model_checkpoint_epoch_99_VRP_20_2021-06-02.h5'
+    # Create and save validation dataset
+    # VAL_SET_PATH_vrp = 'C:/Users/User/Desktop/INSTANCES/M/M-n121-k7.vrp'
+    # validation_dataset = read_data_from_vrp(VAL_SET_PATH_vrp)
+    # VAL_SET_PATH = 'Validation_dataset_VRP_50_2021-06-24.pkl'
+    # validation_dataset = read_from_pickle(VAL_SET_PATH)
+    # print(get_cur_time(), 'validation dataset loaded')
+    # print(validation_dataset)
 
-embedding_dim=128
-GRAPH_SIZE=100
-# Initialize model
-model_tf = load_tf_model(MODEL_PATH,
-                         embedding_dim=embedding_dim,
-                         graph_size=GRAPH_SIZE)
-set_decode_type(model_tf, "sampling")
-print(get_cur_time(), 'model loaded')
+    embedding_dim=128
+    GRAPH_SIZE=100
+    # Initialize model
+    model_tf = load_tf_model(MODEL_PATH,
+                             embedding_dim=embedding_dim,
+                             graph_size=GRAPH_SIZE)
+    set_decode_type(model_tf, "sampling")
+    print(get_cur_time(), 'model loaded')
 
-# Create and save validation dataset
-validation_dataset = read_data_from_vrp(VAL_SET_PATH_vrp)
-# print(validation_dataset)
-print(get_cur_time(), 'validation dataset loaded')
+    # validate(validation_dataset, model_tf,1000)
 
+    print("My data")
+    # VAL_SET_PATH_vrp = 'C:/Users/User/Desktop/INSTANCES/Eilon/E-n22-k4.vrp'
+    VAL_SET_PATH_vrp = input_path
+    validation_dataset = read_data_from_vrp(VAL_SET_PATH_vrp)
+    print(validation_dataset)
 
-validate(validation_dataset, model_tf,1000)
+    validate(validation_dataset, model_tf,1000)
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("datasets", nargs='+', help="Filename of the dataset(s) to evaluate")
+
+    main(parser.parse_args().datasets[0])
